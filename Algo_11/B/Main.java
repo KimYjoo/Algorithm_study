@@ -1,34 +1,28 @@
-package Algo_11.B_pro;
+package Algo_11.B;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.StringTokenizer;
  
 public class Main {
-    public static int dfs(int[] arr, boolean[] visited, int w, int n){
-        if(n == arr.length){
-            int sum = 0;
-            for(int i = 0; i < arr.length; i++) if(visited[i]) sum += arr[i];
-            if(sum == w) return 1;
+    public static int solveSum(int[] arr, int iter, int w, int ret, ArrayList<HashMap<Integer, Integer>> memo){
+    
+        if(iter == arr.length){
+            if(ret == w) return 1;
             else return 0;
         }
-        else{
-            int count = 0;
-            visited[n] = true;
-            count += dfs(arr, visited, w, n+1);
-            visited[n] = false;
-            count += dfs(arr, visited, w, n+1);
-            return count;
-        }
+        if(memo.get(iter).containsKey(ret)) return memo.get(iter).get(ret);
+        int count1 = solveSum(arr, iter+1, w, ret+arr[iter], memo);
+        int count2 = solveSum(arr, iter+1, w, ret-arr[iter], memo);
+        memo.get(iter).put(ret, count1 + count2);
+        return count1 + count2;
     }
     public static void solve(int[] arr, int w, int n){
-        int allSum = Arrays.stream(arr).sum();
-        boolean[] visited = new boolean[arr.length];
-        if((allSum+w)%2 != 0) System.out.println(0);
-        else{
-            int W = (allSum + w) / 2;
-            System.out.println(dfs(arr, visited, W, 0));
+        ArrayList<HashMap<Integer, Integer>> memo = new ArrayList<>();
+        for(int i = 0; i < arr.length; i++){
+            memo.add(new HashMap<>());
         }
+        System.out.println(solveSum(arr, 0, w, 0, memo));
     }
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
